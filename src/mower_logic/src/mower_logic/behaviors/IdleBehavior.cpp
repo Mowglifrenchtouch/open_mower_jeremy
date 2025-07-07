@@ -89,12 +89,12 @@ Behavior *IdleBehavior::execute() {
                              !last_config.manual_pause_mowing && !rain_delay;
 
     if (manual_start_mowing || ((automatic_mode || active_semiautomatic_task) && mower_ready)) {
-      if(last_power.v_charge < 5.0) {
+      if (last_power.v_charge < 5.0) {
         // Not docked, so just mow
         setGPS(true);
         return &MowingBehavior::INSTANCE;
       }
-      if(last_config.rain_mode && last_status.rain_detected && rain_detected) {
+      if (last_config.rain_mode && last_status.rain_detected && rain_detected) {
         ROS_INFO_STREAM_THROTTLE(300, "We want to mow, but its raining and we are already docked.");
       } else {
         if (PerimeterUndockingBehavior::configured(config)) return &PerimeterUndockingBehavior::INSTANCE;
