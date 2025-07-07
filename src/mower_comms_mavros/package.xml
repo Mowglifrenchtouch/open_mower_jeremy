@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>mower_comms_v2</name>
+  <version>0.0.1</version>
+  <description>Communication backend for OpenMower using MAVROS and standard ROS services</description>
+  <maintainer email="clemens1@familie-elflein.de">Clemens Elflein</maintainer>
+  <license>CC BY-NC-SA 4.0</license>
+
+  <url type="website">https://github.com/ClemensElflein/OpenMower</url>
+
+  <!-- Build tools -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Core dependencies -->
+  <build_depend>roscpp</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>mower_msgs</build_depend>
+  <build_depend>xbot_msgs</build_depend>
+  <build_depend>xesc_msgs</build_depend>
+  <build_depend>nmea_msgs</build_depend>
+  <build_depend>ublox_msgs</build_depend>
+  <build_depend>mavros_msgs</build_depend>
+  <build_depend>robot_localization</build_depend>
+
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>mower_msgs</exec_depend>
+  <exec_depend>xbot_msgs</exec_depend>
+  <exec_depend>xesc_msgs</exec_depend>
+  <exec_depend>nmea_msgs</exec_depend>
+  <exec_depend>ublox_msgs</exec_depend>
+  <exec_depend>mavros_msgs</exec_depend>
+  <exec_depend>robot_localization</exec_depend>
+
+  <!-- Optional or future dependencies -->
+  <depend>xbot_framework</depend>
+
+  <!-- Export -->
+  <export>
+    <!-- Plugins, message generators, etc. -->
+  </export>
+</package>

@@ -9,6 +9,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install --yes \
     git \
     mosquitto python3.8-venv \
+    python3-serial \
     nginx && rm -rf /var/www /etc/nginx/sites-enabled/* \
     rm -rf /var/lib/apt/lists/*
 
@@ -68,9 +69,17 @@ ENV DEBIAN_FRONTEND=noninteractive
 COPY --link --from=slic3r /opt/prebuilt/slic3r_coverage_planner /opt/prebuilt/slic3r_coverage_planner
 
 #Fetch the list of packages, this only changes if new dependencies have been added (only sometimes)
+# Install GeographicLib datasets for MAVROS
 COPY --link --from=dependencies /apt-install_list /apt-install_list
 RUN apt-get update && \
-    apt-get install --no-install-recommends --yes $(cat /apt-install_list) libasio-dev && \
+    apt-get install --no-install-recommends --yes \
+    $(cat /apt-install_list) \
+    libasio-dev \
+    ros-noetic-mavros \
+    ros-noetic-mavros-extras \
+    ros-noetic-mavlink \
+    libgeographic-dev && \
+    wget https://raw.githubusercontent.com/mavlink/mavros/master/mavros/scripts/install_geographiclib_datasets.sh -O - | bash && \
     rm -rf /var/lib/apt/lists/*
 
 COPY --link ./ /opt/open_mower_ros
@@ -83,9 +92,11 @@ WORKDIR /opt/open_mower_ros
 RUN bash -c "source /opt/ros/$ROS_DISTRO/setup.bash && cd /opt/open_mower_ros/src && catkin_init_workspace && cd .. && source /opt/prebuilt/slic3r_coverage_planner/setup.bash && catkin_make -DCATKIN_BLACKLIST_PACKAGES=slic3r_coverage_planner"
 
 RUN echo "export OM_SOFTWARE_VERSION=$(git describe --tags || git describe --always || echo "v0.0.0")" > version_info.env
-
+# Copie du script auto_backend_selector
+COPY ./docker/auto_backend_selector.py /opt/openmower/auto_backend_selector.py
+RUN chmod +x /opt/openmower/auto_backend_selector.py
 COPY ./docker/openmower_entrypoint.sh /openmower_entrypoint.sh
 RUN chmod +x /openmower_entrypoint.sh
 
 ENTRYPOINT ["/openmower_entrypoint.sh"]
-CMD ["bash", "-c", "service nginx start; service mosquitto start; roslaunch open_mower open_mower.launch --screen"]
+CMD ["/opt/openmower/auto_backend_selector.py"]

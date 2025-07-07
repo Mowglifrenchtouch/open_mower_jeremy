@@ -1,0 +1,26 @@
+ll:
+  bind_ip: "0.0.0.0"
+
+  services:
+    diff_drive:
+      ticks_per_m: 300.0       # À ajuster selon ton encodeur
+      wheel_distance_m: 0.325    # Distance entre les roues
+
+    imu:
+      axis_config: "ENU"         # Exemples possibles : "ENU", "NED", "NWU"
+
+    power:
+      battery_full_voltage: 29.4
+      battery_empty_voltage: 24.0
+      battery_critical_voltage: 22.0
+      battery_critical_high_voltage: 30.0
+      charge_current: 3.5        # A, optionnel
+
+    gps:
+      protocol: "ubx"            # ou "nmea" selon ton module
+      baud_rate: 921600
+      port_index: 0              # 0 = 1er port série dispo
+
+      datum_lat: 45.123456       # Coordonnées fixes pour UTM/ref absolute
+      datum_long: 2.123456
+      datum_height: 123.4
