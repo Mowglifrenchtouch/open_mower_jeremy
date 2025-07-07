@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>mower_comms_v2</name>
+  <name>mower_comms_mavros</name>
   <version>0.0.1</version>
   <description>Communication backend for OpenMower using MAVROS and standard ROS services</description>
   <maintainer email="clemens1@familie-elflein.de">Clemens Elflein</maintainer>

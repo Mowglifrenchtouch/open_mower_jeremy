@@ -27,12 +27,12 @@
 #include <spdlog/spdlog.h>
 
 #include "../../../services/service_ids.h"
-#include "DiffDriveServiceInterface.h"
-#include "EmergencyServiceInterface.h"
-#include "GpsServiceInterface.h"
-#include "ImuServiceInterface.h"
-#include "MowerServiceInterface.h"
-#include "PowerServiceInterface.h"
+#include "DiffDriveServiceInterfaceMAVROS.h"
+#include "EmergencyServiceInterfaceMAVROS.h"
+#include "GpsServiceInterfaceMAVROS.h"
+#include "ImuServiceInterfaceMAVROS.h"
+#include "MowerServiceInterfaceMAVROS.h"
+#include "PowerServiceInterfaceMAVROS.h"
 
 ros::Publisher status_pub;
 ros::Publisher nmea_pub;
