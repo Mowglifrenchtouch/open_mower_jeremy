@@ -1,29 +1,168 @@
-#include "service_ids.h"
-#include "GpsServiceInterfaceMAVROS.h"
+#include "GpsServiceInterface.h"
 
-GpsServiceInterface::GpsServiceInterface()
-  : latitude_(0.0), longitude_(0.0), altitude_(0.0) {
-  gps_sub_ = nh_.subscribe("mavros/global_position/global", 10, &GpsServiceInterface::gps_callback, this);
+#include <nmea_msgs/Sentence.h>
+#include <sensor_msgs/NavSatFix.h>
+#include <boost/algorithm/string.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/posix_time/posix_time_io.hpp>
+#include "GeographicLib/DMS.hpp"
+#include "robot_localization/navsat_conversions.h"
+
+GpsServiceInterface::GpsServiceInterface(uint16_t service_id, const xbot::serviceif::Context& ctx,
+                                         const ros::Publisher& absolute_pose_publisher,
+                                         const ros::Publisher& nmea_publisher, double datum_lat, double datum_long,
+                                         double datum_height, uint32_t baud_rate, const std::string& protocol,
+                                         uint8_t port_index)
+    : GpsServiceInterfaceBase(service_id, ctx),
+      absolute_pose_publisher_(absolute_pose_publisher),
+      nmea_publisher_(nmea_publisher),
+      baud_rate_(baud_rate),
+      protocol_(protocol),
+      port_index_(port_index) {
+  RobotLocalization::NavsatConversions::LLtoUTM(datum_lat, datum_long, datum_n_, datum_e_, datum_zone_);
+  datum_u_ = datum_height;
+
+  // Subscriber pour /mavros/global_position/global
+  ros::NodeHandle nh("~");
+  mavros_fix_sub_ = nh.subscribe("/mavros/global_position/global", 10, &GpsServiceInterface::OnFixReceived, this);
 }
 
-void GpsServiceInterface::gps_callback(const sensor_msgs::NavSatFix::ConstPtr& msg) {
-  std::lock_guard<std::mutex> lock(gps_mutex_);
-  latitude_ = msg->latitude;
-  longitude_ = msg->longitude;
-  altitude_ = msg->altitude;
+void GpsServiceInterface::SendNMEA(double lat_in, double lon_in) {
+  using namespace GeographicLib;
+  static ros::Time last_vrs_feedback(0.0);
+  static nmea_msgs::Sentence vrs_msg{};
+
+  if ((ros::Time::now() - last_vrs_feedback).toSec() < 10.0)
+    return;
+  last_vrs_feedback = ros::Time::now();
+
+  auto lat = DMS::Encode(lat_in, DMS::component::MINUTE, 4, DMS::flag::LATITUDE, ';');
+  auto lon = DMS::Encode(lon_in, DMS::component::MINUTE, 4, DMS::flag::LONGITUDE, ';');
+  boost::erase_all(lat, ";");
+  boost::erase_all(lon, ";");
+
+  auto lat_hemisphere = lat.back();
+  auto lon_hemisphere = lon.back();
+
+  std::stringstream message_ss;
+  auto time_facet = new boost::posix_time::time_facet("%H%M%s");
+  message_ss.imbue(std::locale(message_ss.getloc(), time_facet));
+
+  message_ss << "GPGGA," << ros::Time::now().toBoost() << "," << lat.substr(0, lat.length() - 1) << "," << lat_hemisphere
+             << "," << lon.substr(0, lon.length() - 1) << "," << lon_hemisphere << ",1,0,0,0,M,0,M,0000,";
+
+  std::string message_content = message_ss.str();
+  uint8_t checksum = 0;
+  for (const auto c : message_content) checksum ^= c;
+
+  std::stringstream final_message_ss;
+  final_message_ss << "$" << message_content << "*" << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
+                   << (int)checksum;
+
+  vrs_msg.header.frame_id = "gps";
+  vrs_msg.header.seq++;
+  vrs_msg.header.stamp = ros::Time::now();
+  vrs_msg.sentence = final_message_ss.str();
+  nmea_publisher_.publish(vrs_msg);
 }
 
-double GpsServiceInterface::get_latitude() {
-  std::lock_guard<std::mutex> lock(gps_mutex_);
-  return latitude_;
+bool GpsServiceInterface::OnConfigurationRequested(uint16_t service_id) {
+  StartTransaction(true);
+  SetRegisterBaudrate(baud_rate_);
+  if (protocol_ == "UBX") {
+    SetRegisterProtocol(ProtocolType::UBX);
+  } else if (protocol_ == "NMEA") {
+    SetRegisterProtocol(ProtocolType::NMEA);
+  } else {
+    ROS_ERROR_STREAM("Invalid Protocol: " << protocol_);
+  }
+  if (port_index_ > 0) {
+    SetRegisterUart(port_index_);
+  }
+  CommitTransaction();
+  return true;
 }
 
-double GpsServiceInterface::get_longitude() {
-  std::lock_guard<std::mutex> lock(gps_mutex_);
-  return longitude_;
+void GpsServiceInterface::OnTransactionStart(uint64_t timestamp) {
+  pose_msg_.header.frame_id = "gps";
+  pose_msg_.header.stamp = ros::Time::now();
+  pose_msg_.header.seq++;
+  pose_msg_.motion_vector_valid = false;
+  pose_msg_.orientation_valid = false;
+  pose_msg_.sensor_stamp = timestamp / 1000;
+  pose_msg_.flags = 0;
 }
 
-double GpsServiceInterface::get_altitude() {
-  std::lock_guard<std::mutex> lock(gps_mutex_);
-  return altitude_;
+void GpsServiceInterface::OnPositionChanged(const double* new_value, uint32_t length) {
+  if (length != 3) return;
+  SendNMEA(new_value[0], new_value[1]);
+
+  double e, n;
+  std::string zone;
+  RobotLocalization::NavsatConversions::LLtoUTM(new_value[0], new_value[1], n, e, zone);
+  pose_msg_.pose.pose.position.x = e - datum_e_;
+  pose_msg_.pose.pose.position.y = n - datum_n_;
+  pose_msg_.pose.pose.position.z = new_value[2] - datum_u_;
+}
+
+void GpsServiceInterface::OnPositionHorizontalAccuracyChanged(const double& new_value) {
+  pose_msg_.position_accuracy = static_cast<float>(new_value);
+}
+
+void GpsServiceInterface::OnFixTypeChanged(const char* new_value, uint32_t length) {
+  pose_msg_.flags |= xbot_msgs::AbsolutePose::FLAG_GPS_RTK;
+  std::string type(new_value, length);
+  if (type == "FIX")
+    pose_msg_.flags |= xbot_msgs::AbsolutePose::FLAG_GPS_RTK_FIXED;
+  else if (type == "FLOAT")
+    pose_msg_.flags |= xbot_msgs::AbsolutePose::FLAG_GPS_RTK_FLOAT;
+}
+
+void GpsServiceInterface::OnMotionVectorENUChanged(const double* new_value, uint32_t length) {
+  if (length != 3) return;
+  pose_msg_.motion_vector_valid = true;
+  pose_msg_.motion_vector.x = new_value[0];
+  pose_msg_.motion_vector.y = new_value[1];
+  pose_msg_.motion_vector.z = new_value[2];
+}
+
+void GpsServiceInterface::OnMotionHeadingAndAccuracyChanged(const double* new_value, uint32_t length) {
+  if (length != 2) return;
+  pose_msg_.motion_heading = new_value[0];
+  pose_msg_.motion_vector_valid = true;
+}
+
+void GpsServiceInterface::OnVehicleHeadingAndAccuracyChanged(const double* new_value, uint32_t length) {
+  if (length != 2) return;
+  pose_msg_.vehicle_heading = new_value[0];
+  pose_msg_.orientation_accuracy = new_value[1];
+  pose_msg_.orientation_valid = true;
+}
+
+void GpsServiceInterface::OnTransactionEnd() {
+  absolute_pose_publisher_.publish(pose_msg_);
+}
+
+// ---------------------------
+// Nouvel abonné MAVROS
+// ---------------------------
+
+void GpsServiceInterface::OnFixReceived(const sensor_msgs::NavSatFix::ConstPtr& msg) {
+  if (msg->status.status < 0) return;
+
+  pose_msg_.header.stamp = msg->header.stamp;
+  pose_msg_.header.frame_id = "gps";
+
+  double e, n;
+  std::string zone;
+  RobotLocalization::NavsatConversions::LLtoUTM(msg->latitude, msg->longitude, n, e, zone);
+
+  pose_msg_.pose.pose.position.x = e - datum_e_;
+  pose_msg_.pose.pose.position.y = n - datum_n_;
+  pose_msg_.pose.pose.position.z = msg->altitude - datum_u_;
+  pose_msg_.position_accuracy = static_cast<float>(msg->position_covariance[0]);
+
+  pose_msg_.flags = xbot_msgs::AbsolutePose::FLAG_GPS_RTK;  // simplifié ici
+
+  absolute_pose_publisher_.publish(pose_msg_);
 }
