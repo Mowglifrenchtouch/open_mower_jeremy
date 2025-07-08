@@ -27,23 +27,23 @@ include_directories(
 
 # === Source Files ===
 set(SOURCE_FILES
-  mower_comms_mavros/src/mower_comms_MAVROS.cpp
-  mower_comms_mavros/src/EmergencyServiceInterfaceMAVROS.cpp
-  mower_comms_mavros/src/DiffDriveServiceInterfaceMAVROS.cpp
-  mower_comms_mavros/src/MowerServiceInterfaceMAVROS.cpp
-  mower_comms_mavros/src/ImuServiceInterfaceMAVROS.cpp
-  mower_comms_mavros/src/PowerServiceInterfaceMAVROS.cpp
-  mower_comms_mavros/src/GpsServiceInterfaceMAVROS.cpp
+  src/mower_comms_MAVROS.cpp
+  src/EmergencyServiceInterfaceMAVROS.cpp
+  src/DiffDriveServiceInterfaceMAVROS.cpp
+  src/MowerServiceInterfaceMAVROS.cpp
+  src/ImuServiceInterfaceMAVROS.cpp
+  src/PowerServiceInterfaceMAVROS.cpp
+  src/GpsServiceInterfaceMAVROS.cpp
 )
 
 # === Header Files (optional, for IDEs) ===
 set(HEADER_FILES
-  mower_comms_mavros/src/EmergencyServiceInterfaceMAVROS.h
-  mower_comms_mavros/src/DiffDriveServiceInterfaceMAVROS.h
-  mower_comms_mavros/src/MowerServiceInterfaceMAVROS.h
-  mower_comms_mavros/src/ImuServiceInterfaceMAVROS.h
-  mower_comms_mavros/src/PowerServiceInterfaceMAVROS.h
-  mower_comms_mavros/src/GpsServiceInterfaceMAVROS.h
+  src/EmergencyServiceInterfaceMAVROS.h
+  src/DiffDriveServiceInterfaceMAVROS.h
+  src/MowerServiceInterfaceMAVROS.h
+  src/ImuServiceInterfaceMAVROS.h
+  src/PowerServiceInterfaceMAVROS.h
+  src/GpsServiceInterfaceMAVROS.h
 )
 
 # === Executable ===
