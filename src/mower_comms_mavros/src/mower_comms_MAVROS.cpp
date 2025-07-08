@@ -11,6 +11,8 @@
 #include "MowerServiceInterfaceMAVROS.h"
 #include "GpsServiceInterfaceMAVROS.h"
 #include "PowerServiceInterfaceMAVROS.h"
+#include "MowerUIServiceInterface.hpp"
+
 
 // Global instances
 std::shared_ptr<MowerServiceInterfaceMAVROS> mower_service;
@@ -19,6 +21,8 @@ std::unique_ptr<DiffDriveServiceInterfaceMAVROS> diff_drive_service;
 std::unique_ptr<GpsServiceInterface> gps_service;
 std::unique_ptr<PowerServiceInterfaceMAVROS> power_service;
 std::unique_ptr<ImuServiceInterfaceMAVROS> imu_service;
+std::unique_ptr<MowerUIServiceInterface> ui_service;
+
 
 ros::Publisher power_pub;
 
@@ -33,9 +37,13 @@ void imuReceived(const sensor_msgs::Imu::ConstPtr& msg) {
     imu_service->processImuMessage(msg);
   }
 }
+
 void mowerStatusHeartbeat(const ros::TimerEvent &) {
   if (mower_service) {
     mower_service->tick();
+  }
+  if (ui_service) {
+    ui_service->Tick();
   }
 }
 
@@ -58,6 +66,8 @@ int main(int argc, char** argv) {
   diff_drive_service = std::make_unique<DiffDriveServiceInterfaceMAVROS>(nh);
   gps_service = std::make_unique<GpsServiceInterface>();
   imu_service = std::make_unique<ImuServiceInterfaceMAVROS>(nh);
+  ui_service = std::make_unique<MowerUIServiceInterface>(400, xbot::serviceif::Context(), nh);
+
 
 
   // Subscriptions

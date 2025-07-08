@@ -48,6 +48,10 @@ set(HEADER_FILES
 
 # === Executable ===
 add_executable(mower_comms_mavros ${SOURCE_FILES} ${HEADER_FILES})
+add_executable(mower_comms_mavros
+  src/MowerUIServiceInterface.cpp
+)
+
 
 # === Interface auto-generation from JSON ===
 set(SERVICE_FILES

@@ -1,4 +1,5 @@
 {
+  "type": "service",
   "name": "MowerUIService",
   "subscriptions": [
     {
