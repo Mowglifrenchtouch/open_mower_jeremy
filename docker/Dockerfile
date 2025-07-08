@@ -78,9 +78,20 @@ RUN apt-get update && \
     ros-noetic-mavros \
     ros-noetic-mavros-extras \
     ros-noetic-mavlink \
-    libgeographic-dev && \
-    wget https://raw.githubusercontent.com/mavlink/mavros/master/mavros/scripts/install_geographiclib_datasets.sh -O - | bash && \
+    libgeographic-dev \
+    cmake \
+    wget \
+    build-essential \
+    && wget https://raw.githubusercontent.com/mavlink/mavros/master/mavros/scripts/install_geographiclib_datasets.sh -O - | bash && \
     rm -rf /var/lib/apt/lists/*
+
+# ----------- AJOUT SPÉCIFIQUE : BUILD DE SPDLOG AVEC callback_sink.h ------------
+RUN git clone --depth=1 https://github.com/gabime/spdlog.git /opt/spdlog && \
+    cd /opt/spdlog && mkdir build && cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DSPDLOG_BUILD_SHARED=ON -DCMAKE_INSTALL_PREFIX=/usr && \
+    make -j$(nproc) && make install && \
+    rm -rf /opt/spdlog
+# -----------------------------------------------------------------------------
 
 COPY --link ./ /opt/open_mower_ros
 
@@ -91,7 +102,7 @@ WORKDIR /opt/open_mower_ros
 
 RUN bash -c "source /opt/ros/$ROS_DISTRO/setup.bash && cd /opt/open_mower_ros/src && catkin_init_workspace && cd .. && source /opt/prebuilt/slic3r_coverage_planner/setup.bash && catkin_make -DCATKIN_BLACKLIST_PACKAGES=slic3r_coverage_planner"
 
-RUN echo "export OM_SOFTWARE_VERSION=$(git describe --tags || git describe --always || echo "v0.0.0")" > version_info.env
+RUN echo "export OM_SOFTWARE_VERSION=$(git describe --tags || git describe --always || echo \"v0.0.0\")" > version_info.env
 # Copie du script auto_backend_selector
 COPY ./docker/auto_backend_selector.py /opt/openmower/auto_backend_selector.py
 RUN chmod +x /opt/openmower/auto_backend_selector.py
