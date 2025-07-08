@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
-project(mower_comms_v2)
+project(mower_comms_mavros)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -132,7 +132,7 @@ option(BUILD_MAVROS_BACKEND "Build the MAVROS backend" ON)
 
 include_directories(
         # include
-        src/mavros
+        mower_comms_mavros
         ${catkin_INCLUDE_DIRS}
 )
 
@@ -165,56 +165,26 @@ include_directories(
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
+include_directories(src/mower_comms_mavros)
 
-add_executable(mower_comms_v2
-        src/mower_comms.cpp
-        src/EmergencyServiceInterface.cpp
-        src/EmergencyServiceInterface.h
-        src/DiffDriveServiceInterface.cpp
-        src/DiffDriveServiceInterface.h
-        src/MowerServiceInterface.cpp
-        src/MowerServiceInterface.h
-        src/ImuServiceInterface.cpp
-        src/ImuServiceInterface.h
-        src/PowerServiceInterface.cpp
-        src/PowerServiceInterface.h
-        src/GpsServiceInterface.cpp
-        src/GpsServiceInterface.h
-)
+  add_executable(mower_comms_mavros
+    mower_comms_MAVROS.cpp
+    EmergencyServiceInterfaceMAVROS.cpp
+    EmergencyServiceInterfaceMAVROS.h
+    DiffDriveServiceInterfaceMAVROS.cpp
+    DiffDriveServiceInterfaceMAVROS.h
+    MowerServiceInterfaceMAVROS.cpp
+    MowerServiceInterfaceMAVROS.h
+    ImuServiceInterfaceMAVROS.cpp
+    ImuServiceInterfaceMAVROS.h
+    PowerServiceInterfaceMAVROS.cpp
+    PowerServiceInterfaceMAVROS.h
+    GpsServiceInterfaceMAVROS.cpp
+    GpsServiceInterfaceMAVROS.h
+  )
 
-add_executable(mower_comms_mavros
-        src/mavros/mower_comms_MAVROS.cpp
-        src/mavros/EmergencyServiceInterfaceMAVROS.cpp
-        src/mavros/EmergencyServiceInterfaceMAVROS.h
-        src/mavros/DiffDriveServiceInterfaceMAVROS.cpp
-        src/mavros/DiffDriveServiceInterfaceMAVROS.h
-        src/mavros/MowerServiceInterfaceMAVROS.cpp
-        src/mavros/MowerServiceInterfaceMAVROS.h
-        src/mavros/ImuServiceInterfaceMAVROS.cpp
-        src/mavros/ImuServiceInterfaceMAVROS.h
-        src/mavros/PowerServiceInterfaceMAVROS.cpp
-        src/mavros/PowerServiceInterfaceMAVROS.h
-        src/mavros/GpsServiceInterfaceMAVROS.cpp
-        src/mavros/GpsServiceInterfaceMAVROS.h
-    )
-
-    target_link_libraries(mower_comms_v2 ${catkin_LIBRARIES})
-add_dependencies(mower_comms_v2 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-target_link_libraries(mower_comms_mavros ${catkin_LIBRARIES})
-add_dependencies(mower_comms_mavros ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-target_add_service_interface(mower_comms_v2 ImuServiceInterface ${CMAKE_CURRENT_SOURCE_DIR}/../../services/imu_service.json)
-target_add_service_interface(mower_comms_v2 EmergencyServiceInterface ${CMAKE_CURRENT_SOURCE_DIR}/../../services/emergency_service.json)
-target_add_service_interface(mower_comms_v2 DiffDriveServiceInterface ${CMAKE_CURRENT_SOURCE_DIR}/../../services/diff_drive_service.json)
-target_add_service_interface(mower_comms_v2 MowerServiceInterface ${CMAKE_CURRENT_SOURCE_DIR}/../../services/mower_service.json)
-target_add_service_interface(mower_comms_v2 PowerServiceInterface ${CMAKE_CURRENT_SOURCE_DIR}/../../services/power_service.json)
-target_add_service_interface(mower_comms_v2 GpsServiceInterface ${CMAKE_CURRENT_SOURCE_DIR}/../../services/gps_service.json)
-set_target_properties(mower_comms_mavros PROPERTIES OUTPUT_NAME mower_comms_mavros PREFIX "")
-
-
-add_dependencies(mower_comms_v2 ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
-target_link_libraries(mower_comms_v2 PUBLIC ${catkin_LIBRARIES} ${GeographicLib_LIBRARIES})
+add_dependencies(mower_comms_mavros ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+target_link_libraries(mower_comms_mavros PUBLIC ${catkin_LIBRARIES} ${GeographicLib_LIBRARIES})
 
 #############
 ## Install ##
