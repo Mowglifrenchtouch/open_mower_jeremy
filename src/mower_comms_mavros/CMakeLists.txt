@@ -28,6 +28,7 @@ include_directories(
 # === Source Files ===
 set(SOURCE_FILES
   src/mower_comms_MAVROS.cpp
+  src/MowerUIServiceInterface.cpp
   src/EmergencyServiceInterfaceMAVROS.cpp
   src/DiffDriveServiceInterfaceMAVROS.cpp
   src/MowerServiceInterfaceMAVROS.cpp
@@ -44,15 +45,16 @@ set(HEADER_FILES
   src/ImuServiceInterfaceMAVROS.h
   src/PowerServiceInterfaceMAVROS.h
   src/GpsServiceInterfaceMAVROS.h
+  src/MowerUIServiceInterface.h
 )
-
+set_source_files_properties(${HEADER_FILES} PROPERTIES HEADER_FILE_ONLY TRUE)
 # === Executable ===
-add_executable(mower_comms_mavros ${SOURCE_FILES} ${HEADER_FILES})
-add_executable(mower_comms_mavros
-  src/MowerUIServiceInterface.cpp
+add_executable(mower_comms_mavros ${SOURCE_FILES} )
+
+add_service_interface(
+  MowerUIServiceInterface
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/MowerUIService.interface
 )
-
-
 # === Interface auto-generation from JSON ===
 set(SERVICE_FILES
   diff_drive_service
@@ -63,6 +65,9 @@ set(SERVICE_FILES
   power_service
   mower_ui_service
 )
+
+
+
 
 foreach(service IN LISTS SERVICE_FILES)
   string(REPLACE "_service" "" class ${service})  # Simple transformation if needed
