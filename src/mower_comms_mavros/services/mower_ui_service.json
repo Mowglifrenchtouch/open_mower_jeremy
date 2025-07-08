@@ -1,6 +1,8 @@
 {
   "type": "service",
   "name": "MowerUIService",
+  "version": 1,
+  "description": "Expose l'état MAVROS, la batterie, le GPS et permet l'affichage UI",
   "subscriptions": [
     {
       "topic": "/mavros/state",
