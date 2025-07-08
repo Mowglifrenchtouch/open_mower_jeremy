@@ -1,0 +1,37 @@
+{
+  "name": "MowerUIService",
+  "subscriptions": [
+    {
+      "topic": "/mavros/state",
+      "type": "mavros_msgs/State",
+      "alias": "mavros_state"
+    },
+    {
+      "topic": "/mavros/battery",
+      "type": "sensor_msgs/BatteryState",
+      "alias": "battery"
+    },
+    {
+      "topic": "/mavros/gpsstatus/gps1",
+      "type": "mavros_msgs/GPSRAW",
+      "alias": "gps_status"
+    },
+    {
+      "topic": "/mavros/global_position/rel_alt",
+      "type": "std_msgs/Float64",
+      "alias": "altitude"
+    }
+  ],
+  "publications": [
+    {
+      "topic": "/mower/ui/beep",
+      "type": "std_msgs/Bool",
+      "alias": "ui_beep"
+    },
+    {
+      "topic": "/mower/ui/message",
+      "type": "std_msgs/String",
+      "alias": "ui_message"
+    }
+  ]
+}

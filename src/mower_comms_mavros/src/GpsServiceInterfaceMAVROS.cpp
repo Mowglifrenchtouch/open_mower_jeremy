@@ -1,8 +1,9 @@
+#include "service_ids.h"
 #include "GpsServiceInterfaceMAVROS.h"
 
 GpsServiceInterface::GpsServiceInterface()
   : latitude_(0.0), longitude_(0.0), altitude_(0.0) {
-  gps_sub_ = nh_.subscribe("/mavros/global_position/global", 10, &GpsServiceInterface::gps_callback, this);
+  gps_sub_ = nh_.subscribe("mavros/global_position/global", 10, &GpsServiceInterface::gps_callback, this);
 }
 
 void GpsServiceInterface::gps_callback(const sensor_msgs::NavSatFix::ConstPtr& msg) {

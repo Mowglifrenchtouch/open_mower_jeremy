@@ -164,7 +164,7 @@ add_executable(mower_simulation
         src/services/imu_service/imu_service.cpp
         src/services/power_service/power_service.cpp
         src/services/emergency_service/emergency_service.cpp
-                src/services/diff_drive_service/diff_drive_service.cpp
+        src/services/diff_drive_service/diff_drive_service.cpp
         src/services/mower_service/mower_service.cpp
         src/services/gps_service/gps_service.cpp
 )

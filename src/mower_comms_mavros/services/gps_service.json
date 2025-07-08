@@ -1,0 +1,16 @@
+{
+  "name": "GpsService",
+  "version": 1,
+  "topics": [
+    {
+      "name": "mavros/global_position/global",
+      "type": "sensor_msgs/NavSatFix",
+      "direction": "read"
+    },
+    {
+      "name": "fix",
+      "type": "sensor_msgs/NavSatFix",
+      "direction": "write"
+    }
+  ]
+}

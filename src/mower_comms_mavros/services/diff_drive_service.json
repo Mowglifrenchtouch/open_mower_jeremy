@@ -1,0 +1,26 @@
+{
+  "name": "DiffDriveService",
+  "version": 1,
+  "topics": [
+    {
+      "name": "cmd_vel",
+      "type": "geometry_msgs/Twist",
+      "direction": "read"
+    },
+    {
+      "name": "mavros/setpoint_velocity/cmd_vel_unstamped",
+      "type": "geometry_msgs/Twist",
+      "direction": "read"
+    },
+    {
+      "name": "cmd_vel",
+      "type": "geometry_msgs/Twist",
+      "direction": "read"
+    },
+    {
+      "name": "odom",
+      "type": "nav_msgs/Odometry",
+      "direction": "write"
+    }
+  ]
+}

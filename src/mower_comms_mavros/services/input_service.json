@@ -1,0 +1,27 @@
+{
+  "name": "InputService",
+  "subscriptions": [
+    {
+      "topic": "/mavros/rc/in",
+      "type": "mavros_msgs/RCIn",
+      "alias": "rc_input"
+    },
+    {
+      "topic": "/mavros/manual_control/control",
+      "type": "mavros_msgs/ManualControl",
+      "alias": "manual_control"
+    }
+  ],
+  "publications": [
+    {
+      "topic": "/mower/input/button",
+      "type": "std_msgs/String",
+      "alias": "button_event"
+    },
+    {
+      "topic": "/mower/input/joystick",
+      "type": "geometry_msgs/Twist",
+      "alias": "joystick_input"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "PowerService",
+  "version": 1,
+  "topics": [
+    {
+      "name": "mavros/battery",
+      "type": "sensor_msgs/BatteryState",
+      "direction": "read"
+    },
+    {
+      "name": "battery_state",
+      "type": "sensor_msgs/BatteryState",
+      "direction": "write"
+    }
+  ]
+}

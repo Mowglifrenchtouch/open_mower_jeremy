@@ -1,0 +1,18 @@
+{
+  "name": "EmergencyService",
+  "version": 1,
+  "topics": [
+    {
+      "name": "emergency_stop",
+      "type": "std_msgs/Bool",
+      "direction": "write"
+    }
+  ],
+  "services": [
+    {
+      "name": "trigger_emergency_stop",
+      "type": "std_srvs/SetBool",
+      "direction": "provide"
+    }
+  ]
+}

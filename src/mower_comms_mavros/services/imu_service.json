@@ -1,0 +1,16 @@
+{
+  "name": "ImuService",
+  "version": 1,
+  "topics": [
+    {
+      "name": "imu/data",
+      "type": "sensor_msgs/Imu",
+      "direction": "write"
+    },
+    {
+      "name": "imu/mag",
+      "type": "sensor_msgs/MagneticField",
+      "direction": "write"
+    }
+  ]
+}
