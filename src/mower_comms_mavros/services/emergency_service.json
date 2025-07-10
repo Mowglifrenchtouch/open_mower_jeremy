@@ -1,18 +1,29 @@
 {
-  "name": "EmergencyService",
-  "version": 1,
-  "topics": [
+  "inputs": [
     {
-      "name": "emergency_stop",
-      "type": "std_msgs/Bool",
-      "direction": "write"
+      "id": 0,
+      "name": "Set Emergency",
+      "type": "uint8_t"
     }
   ],
-  "services": [
+  "outputs": [
     {
-      "name": "trigger_emergency_stop",
-      "type": "std_srvs/SetBool",
-      "direction": "provide"
+      "id": 0,
+      "name": "Emergency Active",
+      "type": "uint8_t"
+    },
+    {
+      "id": 1,
+      "name": "Emergency Latch",
+      "type": "uint8_t"
+    },
+    {
+      "id": 2,
+      "name": "Emergency Reason",
+      "type": "char[255]"
     }
-  ]
+  ],
+  "registers": [],
+  "type": "EmergencyService",
+  "version": 1
 }

@@ -1,42 +1,54 @@
 <?xml version="1.0"?>
 <package format="2">
-    <name>mower_map</name>
-    <version>0.0.0</version>
-    <description>The mower_map package</description>
-    <maintainer email="clemens1@familie-elflein.de">Clemens Elflein</maintainer>
-    <license>CC BY-NC-SA 4.0</license>
+  <name>mower_map</name>
+  <version>0.0.1</version>
+  <description>Handles mowing areas, docking points and map editing for OpenMower</description>
 
-    <url type="website">https://github.com/ClemensElflein/OpenMower</url>
+  <maintainer email="clemens1@familie-elflein.de">Clemens Elflein</maintainer>
+  <license>CC BY-NC-SA 4.0</license>
 
-    <buildtool_depend>catkin</buildtool_depend>
+  <url type="website">https://github.com/ClemensElflein/OpenMower</url>
 
-    <build_depend>roscpp</build_depend>
-    <build_depend>message_generation</build_depend>
-    <build_depend>geometry_msgs</build_depend>
-    <build_depend>grid_map_core</build_depend>
-    <build_depend>grid_map_ros</build_depend>
-    <build_depend>grid_map_filters</build_depend>
-    <build_depend>grid_map_cv</build_depend>
-    <build_depend>rosbag</build_depend>
+  <!-- Build tool -->
+  <buildtool_depend>catkin</buildtool_depend>
 
-    <build_export_depend>roscpp</build_export_depend>
-    <build_export_depend>message_generation</build_export_depend>
-    <build_export_depend>geometry_msgs</build_export_depend>
-    <build_export_depend>grid_map_core</build_export_depend>
-    <build_export_depend>grid_map_ros</build_export_depend>
-    <build_export_depend>grid_map_filters</build_export_depend>
-    <build_export_depend>grid_map_cv</build_export_depend>
-    <build_export_depend>rosbag</build_export_depend>
+  <!-- Build-time dependencies -->
+  <build_depend>roscpp</build_depend>
+  <build_depend>message_generation</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>grid_map_core</build_depend>
+  <build_depend>grid_map_ros</build_depend>
+  <build_depend>grid_map_filters</build_depend>
+  <build_depend>grid_map_cv</build_depend>
+  <build_depend>rosbag</build_depend>
+  <build_depend>xbot_msgs</build_depend>
 
+  <!-- Exported build-time dependencies -->
+  <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>message_generation</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+  <build_export_depend>geometry_msgs</build_export_depend>
+  <build_export_depend>grid_map_core</build_export_depend>
+  <build_export_depend>grid_map_ros</build_export_depend>
+  <build_export_depend>grid_map_filters</build_export_depend>
+  <build_export_depend>grid_map_cv</build_export_depend>
+  <build_export_depend>rosbag</build_export_depend>
+  <build_export_depend>xbot_msgs</build_export_depend>
 
-    <exec_depend>roscpp</exec_depend>
-    <exec_depend>geometry_msgs</exec_depend>
-    <depend>xbot_msgs</depend>
+  <!-- Run-time dependencies -->
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>grid_map_core</exec_depend>
+  <exec_depend>grid_map_ros</exec_depend>
+  <exec_depend>grid_map_filters</exec_depend>
+  <exec_depend>grid_map_cv</exec_depend>
+  <exec_depend>rosbag</exec_depend>
+  <exec_depend>xbot_msgs</exec_depend>
 
-
-    <!-- The export tag contains other, unspecified, tags -->
-    <export>
-        <!-- Other tools can request additional information be placed here -->
-
-    </export>
+  <export>
+    <!-- Optional future: dynamic_reconfigure, rqt, plugins, etc. -->
+  </export>
 </package>

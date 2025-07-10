@@ -1,83 +1,63 @@
-cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0.2)
 project(mower_comms_mavros)
 
+## Compile avec C++14
+add_compile_options(-std=c++14)
+
+## Rechercher les dépendances
 find_package(catkin REQUIRED COMPONENTS
-  mower_msgs
-  sensor_msgs
   roscpp
-  xesc_msgs
-  xbot_msgs
-  robot_localization
+  std_msgs
+  geometry_msgs
+  nav_msgs
+  sensor_msgs
+  tf
+  message_generation
+  mavros_msgs
+  cv_bridge
 )
 
-find_package(Boost REQUIRED)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "/usr/share/cmake/geographiclib/")
-find_package(GeographicLib REQUIRED)
+## OpenCV (optionnel si tu n'en as pas besoin partout)
+find_package(OpenCV REQUIRED)
 
+###################################
+## Déclaration de ce package ROS ##
+###################################
 catkin_package(
-  DEPENDS GeographicLib
+  INCLUDE_DIRS include
+  LIBRARIES mower_comms_mavros
+  CATKIN_DEPENDS roscpp std_msgs geometry_msgs nav_msgs sensor_msgs tf mavros_msgs cv_bridge
+  DEPENDS OpenCV
 )
 
-# === Includes ===
+###########
+## Build ##
+###########
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
-  ${PROJECT_SOURCE_DIR}/mower_comms_mavros/services
-  ${PROJECT_SOURCE_DIR}/mower_comms_mavros/src
+  ${OpenCV_INCLUDE_DIRS}
 )
 
-# === Source Files ===
-set(SOURCE_FILES
-  src/mower_comms_MAVROS.cpp
-  src/MowerUIServiceInterface.cpp
-  src/EmergencyServiceInterfaceMAVROS.cpp
-  src/DiffDriveServiceInterfaceMAVROS.cpp
-  src/MowerServiceInterfaceMAVROS.cpp
-  src/ImuServiceInterfaceMAVROS.cpp
-  src/PowerServiceInterfaceMAVROS.cpp
-  src/GpsServiceInterfaceMAVROS.cpp
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+
+add_library(${PROJECT_NAME} ${SOURCES})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS})
+
+add_executable(${PROJECT_NAME}_node src/mower_comms_MAVROS.cpp)
+target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME})
+
+#############
+## Install ##
+#############
+install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_node
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 )
 
-# === Header Files (optional, for IDEs) ===
-set(HEADER_FILES
-  src/EmergencyServiceInterfaceMAVROS.h
-  src/DiffDriveServiceInterfaceMAVROS.h
-  src/MowerServiceInterfaceMAVROS.h
-  src/ImuServiceInterfaceMAVROS.h
-  src/PowerServiceInterfaceMAVROS.h
-  src/GpsServiceInterfaceMAVROS.h
-  src/MowerUIServiceInterface.h
-)
-set_source_files_properties(${HEADER_FILES} PROPERTIES HEADER_FILE_ONLY TRUE)
-# === Executable ===
-add_executable(mower_comms_mavros ${SOURCE_FILES} )
-
-add_service_interface(
-  MowerUIServiceInterface
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/MowerUIService.interface
-)
-# === Interface auto-generation from JSON ===
-set(SERVICE_FILES
-  diff_drive_service
-  emergency_service
-  gps_service
-  imu_service
-  mower_service
-  power_service
-  mower_ui_service
-)
-
-
-
-
-foreach(service IN LISTS SERVICE_FILES)
-  string(REPLACE "_service" "" class ${service})  # Simple transformation if needed
-  target_add_service_interface(mower_comms_mavros ${class}ServiceInterface ${CMAKE_CURRENT_SOURCE_DIR}/services/${service}.json)
-endforeach()
-
-# === Dependencies ===
-add_dependencies(mower_comms_mavros ${catkin_EXPORTED_TARGETS})
-target_link_libraries(mower_comms_mavros
-  PUBLIC
-    ${catkin_LIBRARIES}
-    ${GeographicLib_LIBRARIES}
+install(DIRECTORY launch config interfaces services
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  FILES_MATCHING PATTERN "*.launch"
+                 PATTERN "*.yaml"
+                 PATTERN "*.json"
 )

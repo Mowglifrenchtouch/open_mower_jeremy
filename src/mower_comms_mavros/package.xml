@@ -1,47 +1,46 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>mower_comms_mavros</name>
-  <version>0.1.0</version>
-  <description>Communication backend for OpenMower using MAVROS and standard ROS services</description>
+  <version>0.0.1</version>
+  <description>MAVROS-based communication backend for OpenMower v2msg</description>
 
-  <maintainer email="pepeuch@gmail.com">Yannick Peuchot</maintainer>
-  <license>CC BY-NC-SA 4.0</license>
+  <maintainer email="pepeuch@gmail.com">Your Name</maintainer>
+  <license>MIT</license>
 
-  <url type="website">https://github.com/Mowglifrenchtouch/OpenMower</url>
-  <url type="repository">https://github.com/Mowglifrenchtouch/mower_comms_mavros</url>
-  <url type="bugtracker">https://github.com/Mowglifrenchtouch/mower_comms_mavros/issues</url>
-
+  <!-- Build tools -->
   <buildtool_depend>catkin</buildtool_depend>
 
-  <!-- Build dependencies -->
+  <!-- Build-time dependencies -->
   <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
   <build_depend>sensor_msgs</build_depend>
+  <build_depend>mavros</build_depend>
+  <build_depend>mavros_msgs</build_depend>
   <build_depend>mower_msgs</build_depend>
   <build_depend>xbot_msgs</build_depend>
-  <build_depend>xesc_msgs</build_depend>
-  <build_depend>nmea_msgs</build_depend>
-  <build_depend>ublox_msgs</build_depend>
-  <build_depend>mavros_msgs</build_depend>
-  <build_depend>robot_localization</build_depend>
+  <build_depend>GeographicLib</build_depend>
 
-  <!-- Export build deps -->
-  <build_export_depend>roscpp</build_export_depend>
-  <build_export_depend>mower_msgs</build_export_depend>
+  <!-- Optional (si tu utilises des images ou OpenCV dans ce node) -->
+  <build_depend>cv_bridge</build_depend>
+  <build_export_depend>cv_bridge</build_export_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>libopencv-dev</exec_depend>
 
-  <!-- Execution dependencies -->
+  <!-- Run-time dependencies -->
   <exec_depend>roscpp</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>mavros</exec_depend>
+  <exec_depend>mavros_msgs</exec_depend>
   <exec_depend>mower_msgs</exec_depend>
   <exec_depend>xbot_msgs</exec_depend>
-  <exec_depend>xesc_msgs</exec_depend>
-  <exec_depend>nmea_msgs</exec_depend>
-  <exec_depend>ublox_msgs</exec_depend>
-  <exec_depend>mavros_msgs</exec_depend>
-  <exec_depend>robot_localization</exec_depend>
+  <exec_depend>geographiclib</exec_depend>
 
-  <!-- Optional -->
-  <depend>xbot_framework</depend>
-
+  <!-- Exported configuration -->
   <export>
   </export>
 </package>

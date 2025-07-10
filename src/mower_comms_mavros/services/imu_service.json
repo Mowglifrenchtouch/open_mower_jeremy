@@ -1,16 +1,19 @@
 {
-  "name": "ImuService",
-  "version": 1,
-  "topics": [
+  "inputs": [],
+  "outputs": [
     {
-      "name": "imu/data",
-      "type": "sensor_msgs/Imu",
-      "direction": "write"
-    },
-    {
-      "name": "imu/mag",
-      "type": "sensor_msgs/MagneticField",
-      "direction": "write"
+      "id": 0,
+      "name": "Axes",
+      "type": "double[9]"
     }
-  ]
+  ],
+  "registers": [
+    {
+      "id": 0,
+      "name": "AxisRemap",
+      "type": "int8_t[3]"
+    }
+  ],
+  "type": "ImuService",
+  "version": 1
 }

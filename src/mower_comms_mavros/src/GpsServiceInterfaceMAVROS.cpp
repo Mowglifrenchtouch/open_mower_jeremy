@@ -1,4 +1,4 @@
-#include "GpsServiceInterface.h"
+#include "GpsServiceInterfaceMAVROS.h"
 
 #include <nmea_msgs/Sentence.h>
 #include <sensor_msgs/NavSatFix.h>
